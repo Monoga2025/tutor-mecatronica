@@ -40,8 +40,29 @@ npm run build
 
 ## Status (honest)
 
-Prototype. Per `docs/ESTADO.md`: world, movement, platforms, engine and the solid-shaft module are implemented and were verified with unit and e2e tests on software WebGL. **Not verified:** real touch devices, 60 fps on a real GPU, offline PWA install, calibration of the adaptive thresholds with real learner data. Test results in this README were not re-run when preparing this repo.
+🟡 Prototype. Per `docs/ESTADO.md`: world, movement, platforms, engine and the solid-shaft module are implemented and were verified with unit and e2e tests on software WebGL. **Not verified:** real touch devices, 60 fps on a real GPU, offline PWA install, calibration of the adaptive thresholds with real learner data. Test results in this README were not re-run when preparing this repo.
 
 The textbook PDF used as the content source is not included (copyright); the problems in the pack are original parametric variants.
 
 UI text is in Spanish.
+
+## Folder guide
+
+| Folder | What it holds |
+|---|---|
+| [contenido/](contenido/README.md) | Content packs |
+| [contenido/paquetes/](contenido/paquetes/README.md) | The torsion content pack |
+| [docs/](docs/README.md) | Plan, per-layer status and screenshots |
+| [docs/screenshots/](docs/screenshots/README.md) | Desktop and phone screenshots |
+| [public/](public/README.md) | Static assets (app icon) |
+| [src/](src/README.md) | Application source |
+| [src/engine/](src/engine/README.md) | Pure tutor engine: units, expressions, generator, judge, learner |
+| [src/game/](src/game/README.md) | 3D world, character, camera and modules |
+| [src/ui/](src/ui/README.md) | Formula bank, drag and drop, KaTeX panel |
+| [tests/](tests/README.md) | Unit and end-to-end suites |
+| [tests/unit/](tests/unit/README.md) | Vitest engine tests |
+| [tests/e2e/](tests/e2e/README.md) | Playwright gameplay and UI tests |
+
+---
+
+Built by Monoga · [github.com/Monoga2025](https://github.com/Monoga2025)
