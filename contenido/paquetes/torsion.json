@@ -1,0 +1,209 @@
+{
+  "id": "torsion",
+  "titulo": "Torsión en ejes circulares",
+  "version": 1,
+  "kcs": [
+    { "id": "identificar_datos", "nombre": "Identificar datos (T, c, L, G)", "descripcion": "Reconocer qué dato es el torque, el radio (no el diámetro), la longitud y el módulo de corte." },
+    { "id": "formula_esfuerzo", "nombre": "Fórmula de esfuerzo cortante", "descripcion": "τ = Tρ/J; el máximo está en la superficie exterior (ρ = c)." },
+    { "id": "j_macizo", "nombre": "J de eje macizo", "descripcion": "J = πc⁴/2." },
+    { "id": "j_hueco", "nombre": "J de eje hueco", "descripcion": "J = π(c₂⁴ − c₁⁴)/2." },
+    { "id": "angulo_torsion", "nombre": "Ángulo de torsión", "descripcion": "φ = TL/(JG), en radianes." },
+    { "id": "conversion_unidades", "nombre": "Conversión de unidades", "descripcion": "mm→m, kN·m→N·m, GPa→Pa, kW→W, rpm→rev/s." },
+    { "id": "potencia_torque", "nombre": "Potencia, torque y frecuencia", "descripcion": "P = Tω = 2πfT." },
+    { "id": "criterio_falla", "nombre": "Criterio de falla", "descripcion": "El eje aprueba si τmáx ≤ τadm." },
+    { "id": "dimensionamiento", "nombre": "Dimensionamiento", "descripcion": "c³ = 2T/(πτadm) para eje macizo." }
+  ],
+  "formulas": [
+    { "id": "tau_max_macizo", "nombre": "Esfuerzo máximo, eje macizo", "latex": "\\tau_{max}=\\frac{T\\,c}{J},\\qquad J=\\frac{\\pi c^4}{2}", "expr": "T*c/(pi*c^4/2)", "resultado": { "simbolo": "tau_max", "unidad": "Pa" }, "variables": ["T", "c"], "unidades": { "T": "N·m", "c": "m" } },
+    { "id": "tau_max_hueco", "nombre": "Esfuerzo máximo, eje hueco", "latex": "\\tau_{max}=\\frac{T\\,c_2}{J},\\qquad J=\\frac{\\pi\\left(c_2^4-c_1^4\\right)}{2}", "expr": "T*c2/(pi*(c2^4-c1^4)/2)", "resultado": { "simbolo": "tau_max", "unidad": "Pa" }, "variables": ["T", "c1", "c2"], "unidades": { "T": "N·m", "c1": "m", "c2": "m" } },
+    { "id": "phi_macizo", "nombre": "Ángulo de torsión, eje macizo", "latex": "\\phi=\\frac{T\\,L}{J\\,G},\\qquad J=\\frac{\\pi c^4}{2}", "expr": "T*L/((pi*c^4/2)*G)", "resultado": { "simbolo": "phi", "unidad": "rad" }, "variables": ["T", "L", "c", "G"], "unidades": { "T": "N·m", "L": "m", "c": "m", "G": "Pa" } },
+    { "id": "torque_potencia", "nombre": "Torque a partir de la potencia", "latex": "T=\\frac{P}{\\omega}=\\frac{P}{2\\pi f}", "expr": "P/(2*pi*f)", "resultado": { "simbolo": "T", "unidad": "N·m" }, "variables": ["P", "f"], "unidades": { "P": "W", "f": "Hz" } },
+    { "id": "diametro_minimo", "nombre": "Diámetro mínimo, eje macizo", "latex": "d=2c,\\qquad c=\\sqrt[3]{\\frac{2T}{\\pi\\,\\tau_{adm}}}", "expr": "2*(2*T/(pi*tau))^(1/3)", "resultado": { "simbolo": "d", "unidad": "m" }, "variables": ["T", "tau"], "unidades": { "T": "N·m", "tau": "Pa" } },
+    { "id": "tau_j_cuarto", "nombre": "Esfuerzo con J = πc⁴/4", "latex": "\\tau=\\frac{T\\,c}{J},\\qquad J=\\frac{\\pi c^4}{4}", "expr": "T*c/(pi*c^4/4)", "resultado": { "simbolo": "tau_max", "unidad": "Pa" }, "variables": ["T", "c"], "unidades": { "T": "N·m", "c": "m" }, "distractor": true },
+    { "id": "tau_sin_pi", "nombre": "Esfuerzo con J = c⁴/2", "latex": "\\tau=\\frac{T\\,c}{J},\\qquad J=\\frac{c^4}{2}", "expr": "T*c/(c^4/2)", "resultado": { "simbolo": "tau_max", "unidad": "Pa" }, "variables": ["T", "c"], "unidades": { "T": "N·m", "c": "m" }, "distractor": true },
+    { "id": "phi_j_cuarto", "nombre": "Giro con J = πc⁴/4", "latex": "\\phi=\\frac{T\\,L}{J\\,G},\\qquad J=\\frac{\\pi c^4}{4}", "expr": "T*L/((pi*c^4/4)*G)", "resultado": { "simbolo": "phi", "unidad": "rad" }, "variables": ["T", "L", "c", "G"], "unidades": { "T": "N·m", "L": "m", "c": "m", "G": "Pa" }, "distractor": true },
+    { "id": "torque_sin_2pi", "nombre": "Torque con T = P/f", "latex": "T=\\frac{P}{f}", "expr": "P/f", "resultado": { "simbolo": "T", "unidad": "N·m" }, "variables": ["P", "f"], "unidades": { "P": "W", "f": "Hz" }, "distractor": true }
+  ],
+  "ejercicios": [
+    {
+      "id": "eje_macizo_aprueba",
+      "modulo": "eje_macizo",
+      "titulo": "Eje macizo: ¿aprueba?",
+      "kcs": ["identificar_datos", "formula_esfuerzo", "j_macizo", "conversion_unidades", "criterio_falla"],
+      "dificultad": 2,
+      "enunciado": "Un eje macizo de acero de diámetro {d} transmite un torque de {T}. El esfuerzo cortante admisible es {tau_adm}. Calcula el esfuerzo cortante máximo y decide si el eje aprueba.",
+      "variables": [
+        { "simbolo": "T", "nombre": "torque", "unidad_mostrada": "kN·m", "valores": [1.5, 0.8, 2, 3, 0.25] },
+        { "simbolo": "d", "nombre": "diámetro", "unidad_mostrada": "mm", "valores": [40, 40, 60, 50, 20] }
+      ],
+      "limites": { "tau_adm": { "valor": [100, 70, 80, 140, 120], "unidad": "MPa" } },
+      "incognita": { "simbolo": "tau_max", "nombre": "esfuerzo cortante máximo", "unidad": "MPa" },
+      "formula_correcta": "tau_max_macizo",
+      "asignacion": { "T": "T", "c": "d/2" },
+      "pasos": [
+        { "texto": "El radio es la mitad del diámetro", "latex": "c=\\frac{d}{2}", "simbolo": "c", "expr": "d/2", "unidad": "mm" },
+        { "texto": "Momento polar de inercia del eje macizo", "latex": "J=\\frac{\\pi c^4}{2}", "simbolo": "J", "expr": "pi*c^4/2", "unidad": "mm^4" },
+        { "texto": "Esfuerzo máximo en la superficie (en SI: N·m, m, m⁴)", "latex": "\\tau_{max}=\\frac{Tc}{J}", "simbolo": "tau_max", "expr": "T*c/J", "unidad": "MPa" },
+        { "texto": "Utilización: aprueba si es ≤ 1", "latex": "\\tau_{max}/\\tau_{adm}", "expr": "tau_max/tau_adm", "unidad": "1" }
+      ],
+      "errores": [
+        { "id": "diametro_por_radio", "nombre": "Diámetro en lugar de radio", "descripcion": "Usaste d donde la fórmula pide c = d/2.", "expr_equivocada": "T*d/(pi*d^4/2)", "consecuencia": "rompe", "consecuencia_texto": "El esfuerzo calculado sale 8 veces menor: das por bueno un eje que en realidad se rompe.", "pista_diagnostico": "Mira la cota del dibujo: ¿mide de borde a borde o del centro al borde? ¿Qué pide c?", "kcs": ["identificar_datos"] },
+        { "id": "j_polar_cuarto", "nombre": "J polar mal (πc⁴/4)", "descripcion": "Usaste πc⁴/4, que es el momento de inercia respecto a un diámetro, no el polar.", "expr_equivocada": "T*(d/2)/(pi*(d/2)^4/4)", "consecuencia": "sobra", "consecuencia_texto": "El esfuerzo sale el doble: rechazas o sobredimensionas un eje que bastaba.", "pista_diagnostico": "Para torsión el giro es alrededor del eje del cilindro: ¿qué momento de inercia corresponde, el polar o el de flexión?", "kcs": ["j_macizo"] },
+        { "id": "j_sin_pi", "nombre": "J polar sin π (c⁴/2)", "descripcion": "Olvidaste π en J = πc⁴/2.", "expr_equivocada": "T*(d/2)/((d/2)^4/2)", "consecuencia": "sobra", "consecuencia_texto": "El esfuerzo sale π veces mayor: sobra material.", "pista_diagnostico": "J viene de integrar sobre un círculo: ¿qué constante aparece siempre en el área de un círculo?", "kcs": ["j_macizo"] },
+        { "id": "sin_factor_2", "nombre": "Falta el /2 de J", "descripcion": "Usaste J = πc⁴ en vez de πc⁴/2.", "expr_equivocada": "T*(d/2)/(pi*(d/2)^4)", "consecuencia": "rompe", "consecuencia_texto": "El esfuerzo sale la mitad: apruebas un eje que puede fallar.", "pista_diagnostico": "Revisa el denominador de J: ¿πc⁴ a secas o dividido por algo?", "kcs": ["j_macizo"] },
+        { "id": "mm_sin_convertir", "nombre": "mm sin convertir a m", "descripcion": "Pusiste el radio en milímetros como si fueran metros.", "expr_equivocada": "T*(raw(d)/2)/(pi*(raw(d)/2)^4/2)", "consecuencia": "rompe", "consecuencia_texto": "El esfuerzo sale absurdamente pequeño: el eje parece de sobra y se rompe.", "pista_diagnostico": "¿En qué unidad está el radio que pusiste y en qué unidad trabaja la fórmula para dar pascales?", "kcs": ["conversion_unidades"] },
+        { "id": "knm_sin_convertir", "nombre": "kN·m sin convertir a N·m", "descripcion": "Pusiste el torque en kN·m como si fueran N·m.", "expr_equivocada": "raw(T)*(d/2)/(pi*(d/2)^4/2)", "consecuencia": "rompe", "consecuencia_texto": "El esfuerzo sale mil veces menor: el eje real se rompe.", "pista_diagnostico": "El prefijo k del torque, ¿lo tuviste en cuenta?", "kcs": ["conversion_unidades"] }
+      ],
+      "pistas": [
+        "¿Dónde es mayor el esfuerzo cortante en una sección circular retorcida: en el centro o en la superficie?",
+        "El esfuerzo máximo es τ = Tc/J con J polar del círculo macizo; c es el radio exterior.",
+        "Convierte primero: radio en metros (la mitad del diámetro) y torque en N·m; luego compara τmáx con τadm."
+      ],
+      "prediccion": { "tipo": "aprueba" },
+      "consecuencias": { "subestima": "rompe", "sobreestima": "sobra" }
+    },
+    {
+      "id": "predecir_giro_macizo",
+      "modulo": "predecir_giro",
+      "titulo": "Predecir el giro",
+      "kcs": ["identificar_datos", "angulo_torsion", "j_macizo", "conversion_unidades"],
+      "dificultad": 3,
+      "enunciado": "Un eje macizo de diámetro {d} y longitud {L}, de un material con módulo de corte G = {G}, tiene un extremo empotrado y en el otro se aplica un torque de {T}. Antes de aplicarlo: ¿cuánto girará el extremo libre?",
+      "variables": [
+        { "simbolo": "T", "nombre": "torque", "unidad_mostrada": "N·m", "valores": [500, 200, 1000, 150] },
+        { "simbolo": "d", "nombre": "diámetro", "unidad_mostrada": "mm", "valores": [40, 30, 50, 25] },
+        { "simbolo": "L", "nombre": "longitud", "unidad_mostrada": "m", "valores": [1.5, 2, 1.2, 0.8] },
+        { "simbolo": "G", "nombre": "módulo de corte", "unidad_mostrada": "GPa", "valores": [77, 80, 27, 39] }
+      ],
+      "incognita": { "simbolo": "phi", "nombre": "ángulo de torsión", "unidad": "°" },
+      "formula_correcta": "phi_macizo",
+      "asignacion": { "T": "T", "L": "L", "c": "d/2", "G": "G" },
+      "pasos": [
+        { "texto": "El radio es la mitad del diámetro", "latex": "c=\\frac{d}{2}", "simbolo": "c", "expr": "d/2", "unidad": "mm" },
+        { "texto": "Momento polar de inercia", "latex": "J=\\frac{\\pi c^4}{2}", "simbolo": "J", "expr": "pi*c^4/2", "unidad": "mm^4" },
+        { "texto": "Ángulo en radianes (todo en SI)", "latex": "\\phi=\\frac{TL}{JG}", "simbolo": "phi_rad", "expr": "T*L/(J*G)", "unidad": "rad" },
+        { "texto": "Pasar a grados", "latex": "\\phi^\\circ=\\phi\\cdot\\frac{180}{\\pi}", "expr": "phi_rad", "unidad": "°" }
+      ],
+      "errores": [
+        { "id": "diametro_por_radio", "nombre": "Diámetro en lugar de radio", "descripcion": "Usaste d donde la fórmula pide c = d/2.", "expr_equivocada": "T*L/((pi*d^4/2)*G)", "consecuencia": "gira_mas", "consecuencia_texto": "Predices un giro 16 veces menor: el eje real gira mucho más de lo que esperabas.", "pista_diagnostico": "c aparece a la cuarta potencia: un error en el radio se multiplica. ¿Pusiste radio o diámetro?", "kcs": ["identificar_datos"] },
+        { "id": "j_polar_cuarto", "nombre": "J polar mal (πc⁴/4)", "descripcion": "Usaste πc⁴/4 en vez del momento polar πc⁴/2.", "expr_equivocada": "T*L/((pi*(d/2)^4/4)*G)", "consecuencia": "gira_menos", "consecuencia_texto": "Predices el doble de giro: el eje real gira la mitad.", "pista_diagnostico": "¿Usaste el momento de inercia polar o el de flexión?", "kcs": ["j_macizo"] },
+        { "id": "j_sin_pi", "nombre": "J polar sin π (c⁴/2)", "descripcion": "Olvidaste π en J.", "expr_equivocada": "T*L/(((d/2)^4/2)*G)", "consecuencia": "gira_menos", "consecuencia_texto": "Predices π veces más giro del real.", "pista_diagnostico": "Revisa J: un círculo siempre trae su π.", "kcs": ["j_macizo"] },
+        { "id": "sin_factor_2", "nombre": "Falta el /2 de J", "descripcion": "Usaste J = πc⁴.", "expr_equivocada": "T*L/((pi*(d/2)^4)*G)", "consecuencia": "gira_mas", "consecuencia_texto": "Predices la mitad del giro: el eje real gira el doble.", "pista_diagnostico": "¿J = πc⁴ o πc⁴/2?", "kcs": ["j_macizo"] },
+        { "id": "mm_sin_convertir", "nombre": "mm sin convertir a m", "descripcion": "Pusiste el radio en milímetros como si fueran metros.", "expr_equivocada": "T*L/((pi*(raw(d)/2)^4/2)*G)", "consecuencia": "gira_mas", "consecuencia_texto": "Predices un giro prácticamente nulo; el eje real sí gira.", "pista_diagnostico": "Mira las unidades del radio: G está en pascales, ¿el radio está en metros?", "kcs": ["conversion_unidades"] },
+        { "id": "g_gpa_sin_convertir", "nombre": "G en GPa sin convertir", "descripcion": "Pusiste G en GPa como si fueran Pa.", "expr_equivocada": "T*L/((pi*(d/2)^4/2)*raw(G))", "consecuencia": "gira_menos", "consecuencia_texto": "Predices un giro gigantesco (millones de vueltas); el real es pequeño.", "pista_diagnostico": "¿Cuántos pascales son un GPa? ¿Lo convertiste?", "kcs": ["conversion_unidades"] }
+      ],
+      "pistas": [
+        "Un eje más largo gira más y uno más rígido gira menos: ¿qué magnitudes miden la rigidez de la sección y del material?",
+        "El ángulo de torsión es φ = TL/(JG), con J polar del círculo macizo; el resultado sale en radianes.",
+        "Pasa el radio a metros (mitad del diámetro) y G a pascales antes de calcular; al final convierte radianes a grados."
+      ],
+      "prediccion": { "tipo": "valor", "tolerancia": 0.25 },
+      "consecuencias": { "subestima": "gira_mas", "sobreestima": "gira_menos" }
+    },
+    {
+      "id": "eje_hueco_aprueba",
+      "modulo": "eje_hueco",
+      "titulo": "Eje hueco: ¿aprueba?",
+      "kcs": ["identificar_datos", "formula_esfuerzo", "j_hueco", "conversion_unidades", "criterio_falla"],
+      "dificultad": 3,
+      "enunciado": "Un eje hueco tiene diámetro exterior {d2} y diámetro interior {d1}, y transmite un torque de {T}. El esfuerzo cortante admisible es {tau_adm}. Calcula el esfuerzo cortante máximo y decide si el eje aprueba.",
+      "variables": [
+        { "simbolo": "T", "nombre": "torque", "unidad_mostrada": "kN·m", "valores": [20, 10, 5, 8] },
+        { "simbolo": "d2", "nombre": "diámetro exterior", "unidad_mostrada": "mm", "valores": [120, 80, 60, 100] },
+        { "simbolo": "d1", "nombre": "diámetro interior", "unidad_mostrada": "mm", "valores": [90, 60, 36, 50] }
+      ],
+      "limites": { "tau_adm": { "valor": [100, 120, 200, 50], "unidad": "MPa" } },
+      "incognita": { "simbolo": "tau_max", "nombre": "esfuerzo cortante máximo", "unidad": "MPa" },
+      "formula_correcta": "tau_max_hueco",
+      "asignacion": { "T": "T", "c1": "d1/2", "c2": "d2/2" },
+      "pasos": [
+        { "texto": "Radio exterior", "latex": "c_2=\\frac{d_2}{2}", "simbolo": "c2", "expr": "d2/2", "unidad": "mm" },
+        { "texto": "Radio interior", "latex": "c_1=\\frac{d_1}{2}", "simbolo": "c1", "expr": "d1/2", "unidad": "mm" },
+        { "texto": "Momento polar del eje hueco", "latex": "J=\\frac{\\pi(c_2^4-c_1^4)}{2}", "simbolo": "J", "expr": "pi*(c2^4-c1^4)/2", "unidad": "mm^4" },
+        { "texto": "Esfuerzo máximo en la superficie exterior", "latex": "\\tau_{max}=\\frac{Tc_2}{J}", "simbolo": "tau_max", "expr": "T*c2/J", "unidad": "MPa" },
+        { "texto": "Utilización: aprueba si es ≤ 1", "latex": "\\tau_{max}/\\tau_{adm}", "expr": "tau_max/tau_adm", "unidad": "1" }
+      ],
+      "errores": [
+        { "id": "diametro_por_radio", "nombre": "Diámetros en lugar de radios", "descripcion": "Usaste d₂ y d₁ donde van c₂ y c₁.", "expr_equivocada": "T*d2/(pi*(d2^4-d1^4)/2)", "consecuencia": "rompe", "consecuencia_texto": "El esfuerzo sale 8 veces menor: el eje real se rompe.", "pista_diagnostico": "¿Las cotas son diámetros o radios? ¿Qué pide la fórmula?", "kcs": ["identificar_datos"] },
+        { "id": "j_macizo_en_hueco", "nombre": "J de macizo en un eje hueco", "descripcion": "Usaste πc₂⁴/2 ignorando el agujero.", "expr_equivocada": "T*(d2/2)/(pi*(d2/2)^4/2)", "consecuencia": "rompe", "consecuencia_texto": "Cuentas material que no existe: subestimas el esfuerzo y el eje falla.", "pista_diagnostico": "El agujero no aporta rigidez: ¿le restaste su parte a J?", "kcs": ["j_hueco"] },
+        { "id": "radio_interior", "nombre": "Radio interior en lugar del exterior", "descripcion": "Usaste c₁; eso da el esfuerzo mínimo, no el máximo.", "expr_equivocada": "T*(d1/2)/(pi*((d2/2)^4-(d1/2)^4)/2)", "consecuencia": "rompe", "consecuencia_texto": "Calculas el esfuerzo de la pared interior: la exterior está más cargada y falla.", "pista_diagnostico": "El esfuerzo crece con la distancia al centro: ¿en qué radio es máximo?", "kcs": ["formula_esfuerzo"] },
+        { "id": "j_hueco_resta_antes", "nombre": "J hueco con (c₂ − c₁)⁴", "descripcion": "Restaste los radios antes de elevar a la cuarta.", "expr_equivocada": "T*(d2/2)/(pi*((d2-d1)/2)^4/2)", "consecuencia": "sobra", "consecuencia_texto": "J sale diminuto y el esfuerzo enorme: sobredimensionas sin necesidad.", "pista_diagnostico": "¿Se restan los radios y luego se eleva, o se eleva cada uno y luego se resta?", "kcs": ["j_hueco"] },
+        { "id": "j_polar_cuarto", "nombre": "J polar mal (/4)", "descripcion": "Dividiste entre 4 en vez de 2.", "expr_equivocada": "T*(d2/2)/(pi*((d2/2)^4-(d1/2)^4)/4)", "consecuencia": "sobra", "consecuencia_texto": "El esfuerzo sale el doble: sobra material.", "pista_diagnostico": "¿Momento polar o de flexión? Revisa el denominador.", "kcs": ["j_hueco"] },
+        { "id": "mm_sin_convertir", "nombre": "mm sin convertir a m", "descripcion": "Pusiste los radios en milímetros como si fueran metros.", "expr_equivocada": "T*(raw(d2)/2)/(pi*((raw(d2)/2)^4-(raw(d1)/2)^4)/2)", "consecuencia": "rompe", "consecuencia_texto": "El esfuerzo sale casi cero: el eje real se rompe.", "pista_diagnostico": "¿En qué unidad están los radios que pusiste?", "kcs": ["conversion_unidades"] }
+      ],
+      "pistas": [
+        "Un tubo resiste casi tanto como una barra maciza del mismo diámetro: ¿qué parte de la sección trabaja más?",
+        "Para el eje hueco J = π(c₂⁴ − c₁⁴)/2 y el máximo está en c₂.",
+        "Pasa ambos radios a metros (mitad de cada diámetro), eleva cada uno a la cuarta y resta; luego τ = Tc₂/J."
+      ],
+      "prediccion": { "tipo": "aprueba" },
+      "consecuencias": { "subestima": "rompe", "sobreestima": "sobra" }
+    },
+    {
+      "id": "potencia_rpm_torque",
+      "modulo": "potencia_rpm",
+      "titulo": "Potencia y rpm",
+      "kcs": ["identificar_datos", "potencia_torque", "conversion_unidades"],
+      "dificultad": 2,
+      "enunciado": "Un motor de {P} hace girar un eje a {n}. ¿Qué torque transmite el eje?",
+      "variables": [
+        { "simbolo": "P", "nombre": "potencia", "unidad_mostrada": "kW", "valores": [15, 5, 45, 2.2] },
+        { "simbolo": "n", "nombre": "velocidad de giro", "unidad_mostrada": "rpm", "valores": [1200, 300, 1800, 1450] }
+      ],
+      "incognita": { "simbolo": "T", "nombre": "torque", "unidad": "N·m" },
+      "formula_correcta": "torque_potencia",
+      "asignacion": { "P": "P", "f": "n" },
+      "pasos": [
+        { "texto": "Frecuencia en revoluciones por segundo", "latex": "f=\\frac{n}{60}", "simbolo": "f", "expr": "n", "unidad": "Hz" },
+        { "texto": "Velocidad angular", "latex": "\\omega=2\\pi f", "simbolo": "omega", "expr": "2*pi*f", "unidad": "rad/s" },
+        { "texto": "Torque", "latex": "T=\\frac{P}{\\omega}", "expr": "P/omega", "unidad": "N·m" }
+      ],
+      "errores": [
+        { "id": "rpm_sin_convertir", "nombre": "rpm sin convertir a rad/s", "descripcion": "Usaste las rpm directamente como si fueran ω en rad/s.", "expr_equivocada": "P/raw(n)", "consecuencia": "rompe", "consecuencia_texto": "El torque sale casi 10 veces menor: diseñas un eje débil que se rompe.", "pista_diagnostico": "ω se mide en radianes por segundo: ¿cuántos radianes tiene una vuelta y cuántos segundos un minuto?", "kcs": ["conversion_unidades"] },
+        { "id": "rpm_como_hz", "nombre": "rpm usadas como Hz", "descripcion": "Usaste 2π·n con n en rpm, sin dividir entre 60.", "expr_equivocada": "P/(2*pi*raw(n))", "consecuencia": "rompe", "consecuencia_texto": "El torque sale 60 veces menor: el eje real falla.", "pista_diagnostico": "Hz son vueltas por segundo; rpm son vueltas por minuto. ¿Convertiste?", "kcs": ["conversion_unidades"] },
+        { "id": "sin_factor_2", "nombre": "Falta el 2 de ω = 2πf", "descripcion": "Usaste ω = πf.", "expr_equivocada": "P/(pi*n)", "consecuencia": "sobra", "consecuencia_texto": "El torque sale el doble: sobra material.", "pista_diagnostico": "Una vuelta completa son 2π radianes, no π.", "kcs": ["potencia_torque"] },
+        { "id": "sin_2pi", "nombre": "Falta 2π (P = Tf)", "descripcion": "Usaste la frecuencia en vez de la velocidad angular.", "expr_equivocada": "P/n", "consecuencia": "sobra", "consecuencia_texto": "El torque sale 2π veces mayor: eje sobredimensionado.", "pista_diagnostico": "P = Tω, y ω no es lo mismo que f: ¿qué factor las relaciona?", "kcs": ["potencia_torque"] },
+        { "id": "kw_sin_convertir", "nombre": "kW sin convertir a W", "descripcion": "Pusiste la potencia en kW como si fueran W.", "expr_equivocada": "raw(P)/(2*pi*n)", "consecuencia": "rompe", "consecuencia_texto": "El torque sale mil veces menor: el eje real se rompe.", "pista_diagnostico": "El prefijo k de la potencia, ¿lo tuviste en cuenta?", "kcs": ["conversion_unidades"] }
+      ],
+      "pistas": [
+        "A igual potencia, ¿un eje que gira despacio transmite más o menos torque?",
+        "P = Tω, con ω = 2πf en rad/s.",
+        "Pasa la potencia a vatios y las rpm a vueltas por segundo (divide entre 60) antes de usar ω = 2πf."
+      ],
+      "consecuencias": { "subestima": "rompe", "sobreestima": "sobra" }
+    },
+    {
+      "id": "dimensionar_macizo",
+      "modulo": "dimensionamiento",
+      "titulo": "Dimensionar un eje macizo",
+      "kcs": ["formula_esfuerzo", "j_macizo", "dimensionamiento", "conversion_unidades"],
+      "dificultad": 4,
+      "enunciado": "Un eje macizo debe transmitir un torque de {T} sin superar un esfuerzo cortante admisible de {tau_adm}. ¿Cuál es el diámetro mínimo?",
+      "variables": [
+        { "simbolo": "T", "nombre": "torque", "unidad_mostrada": "kN·m", "valores": [6, 2, 0.5, 10] },
+        { "simbolo": "tau_adm", "nombre": "esfuerzo admisible", "unidad_mostrada": "MPa", "valores": [65, 80, 40, 100] }
+      ],
+      "incognita": { "simbolo": "d", "nombre": "diámetro mínimo", "unidad": "mm" },
+      "formula_correcta": "diametro_minimo",
+      "asignacion": { "T": "T", "tau": "tau_adm" },
+      "pasos": [
+        { "texto": "Despejar c de τadm = Tc/J con J = πc⁴/2", "latex": "c^3=\\frac{2T}{\\pi\\tau_{adm}}", "simbolo": "c3", "expr": "2*T/(pi*tau_adm)" },
+        { "texto": "Radio mínimo", "latex": "c=\\sqrt[3]{c^3}", "simbolo": "c", "expr": "c3^(1/3)", "unidad": "mm" },
+        { "texto": "Diámetro mínimo", "latex": "d=2c", "expr": "2*c", "unidad": "mm" }
+      ],
+      "errores": [
+        { "id": "sin_factor_2", "nombre": "Falta el 2 de c³ = 2T/(πτ)", "descripcion": "Usaste c³ = T/(πτ).", "expr_equivocada": "2*(T/(pi*tau_adm))^(1/3)", "consecuencia": "rompe", "consecuencia_texto": "El diámetro sale 21 % menor: el eje queda corto y falla.", "pista_diagnostico": "Al despejar de J = πc⁴/2, ¿a dónde se fue el 2?", "kcs": ["dimensionamiento"] },
+        { "id": "j_polar_cuarto", "nombre": "J polar mal (πc⁴/4)", "descripcion": "Despejaste con J = πc⁴/4.", "expr_equivocada": "2*(4*T/(pi*tau_adm))^(1/3)", "consecuencia": "sobra", "consecuencia_texto": "El diámetro sale 26 % mayor: sobra material.", "pista_diagnostico": "¿Qué J usaste para despejar: polar o de flexión?", "kcs": ["j_macizo"] },
+        { "id": "reporta_radio", "nombre": "Reporta el radio como diámetro", "descripcion": "Diste c como si fuera d.", "expr_equivocada": "(2*T/(pi*tau_adm))^(1/3)", "consecuencia": "rompe", "consecuencia_texto": "El eje fabricado tiene la mitad del diámetro necesario y se rompe.", "pista_diagnostico": "La fórmula despejada da c. ¿Te piden c o d?", "kcs": ["identificar_datos"] },
+        { "id": "mpa_sin_convertir", "nombre": "MPa sin convertir a Pa", "descripcion": "Pusiste τadm en MPa como si fueran Pa.", "expr_equivocada": "2*(2*T/(pi*raw(tau_adm)))^(1/3)", "consecuencia": "sobra", "consecuencia_texto": "El diámetro sale cien veces mayor: un eje absurdo.", "pista_diagnostico": "¿Cuántos pascales hay en un megapascal?", "kcs": ["conversion_unidades"] },
+        { "id": "knm_sin_convertir", "nombre": "kN·m sin convertir a N·m", "descripcion": "Pusiste el torque en kN·m como si fueran N·m.", "expr_equivocada": "2*(2*raw(T)/(pi*tau_adm))^(1/3)", "consecuencia": "rompe", "consecuencia_texto": "El diámetro sale 10 veces menor: el eje se rompe.", "pista_diagnostico": "El prefijo k del torque, ¿lo tuviste en cuenta?", "kcs": ["conversion_unidades"] }
+      ],
+      "pistas": [
+        "Dimensionar es la misma fórmula del esfuerzo máximo, pero ahora la incógnita es el radio.",
+        "Iguala τadm = Tc/J con J = πc⁴/2 y despeja c: queda c³ = 2T/(πτadm).",
+        "Usa T en N·m y τadm en Pa, saca la raíz cúbica para obtener c en metros y recuerda que te piden d = 2c."
+      ],
+      "consecuencias": { "subestima": "rompe", "sobreestima": "sobra" }
+    }
+  ]
+}
