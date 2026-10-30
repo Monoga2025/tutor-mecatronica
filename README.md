@@ -4,6 +4,12 @@ A 3D browser game that tutors mechanics of materials (torsion of shafts). You wa
 
 ![Torsion module](docs/screenshots/c-desktop.png)
 
+## Screenshots
+
+![Raton Ingeniero: the 3D world where the learner walks to an exercise gate (for example, predicting the direction of a twist).](docs/screenshots/world.png)
+
+*Raton Ingeniero: the 3D world where the learner walks to an exercise gate (for example, predicting the direction of a twist).*
+
 ## What it actually does
 
 - **Procedural exercises.** A JSON content pack defines formulas, variables and typical wrong formulas; a seeded generator produces concrete instances (21 variants across 5 modules in the torsion pack).
